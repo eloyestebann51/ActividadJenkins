@@ -10,42 +10,27 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo "Clonando el repositorio..."
                 checkout scm
-            }
-        }
-
-        stage('Build') {
-            steps {
-                echo "Instalando dependencias y construyendo la app..."
-                sh 'npm install && npm run build'
-            }
-        }
-
-        stage('Archive Artifacts') {
-            steps {
-                echo "Archivando artefactos..."
-                archiveArtifacts artifacts: 'build/**', fingerprint: true
             }
         }
 
         stage('Test') {
             steps {
-                echo "Ejecutando tests..."
-                sh 'npm test -- --watchAll=false --ci'
+                echo "Ejecutando tests en modo CI..."
+                sh 'CI=true npm test -- --watchAll=false'
             }
         }
     }
 
     post {
         always {
-            echo "Build finalizado. Revisa los logs y artefactos."
+            echo "Build finalizado. Revisa los logs."
         }
         success {
-            echo "Build exitoso"
+            echo "Todos los tests pasaron"
         }
         failure {
-            echo "Build falló"
+            echo "Al menos un test falló"
         }
     }
 }
