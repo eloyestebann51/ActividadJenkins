@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Input } from 'reactstrap';
 import React from 'react';
 
-// Comentario de prueba 2
+// Comentario de prueba 3
 class App extends React.Component {
   constructor() {
     super();
