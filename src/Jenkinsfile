@@ -1,33 +1,51 @@
 pipeline {
     agent any
 
-    triggers {
-        pollSCM('H/1 * * * *')
+    environment {
+        NODEJS_HOME = tool name: 'NodeJS', type: 'NodeJSInstallation'
+        PATH = "${env.NODEJS_HOME}/bin:${env.PATH}"
     }
 
     stages {
+
         stage('Checkout') {
             steps {
+                echo "Clonando el repositorio..."
                 checkout scm
-            }
-        }
-
-        stage('Install') {
-            steps {
-                sh 'npm install'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh 'npm test -- --watchAll=false'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'npm run build'
+                echo "Instalando dependencias y construyendo la app..."
+                sh 'npm install && npm run build'
             }
+        }
+
+        stage('Archive Artifacts') {
+            steps {
+                echo "Archivando artefactos..."
+                archiveArtifacts artifacts: 'build/**', fingerprint: true
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo "Ejecutando tests..."
+                sh 'npm test -- --watchAll=false'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Build finalizado. Revisa los logs y artefactos."
+        }
+        success {
+            echo "Build exitoso"
+        }
+        failure {
+            echo "Build falló"
         }
     }
 }
