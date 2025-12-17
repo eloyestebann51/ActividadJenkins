@@ -17,7 +17,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo "Ejecutando tests en modo CI..."
-                sh 'CI=true npm test -- --watchAll=false'
+                sh 'npx jest --ci --watchAll=false'
             }
         }
     }
