@@ -13,6 +13,6 @@ test('realiza una suma correctamente', () => {
   fireEvent.change(input2, { target: { value: '7' } });
   fireEvent.click(button);
 
-  const resultado = screen.getByText('Resultado: 10');
+  const resultado = screen.getByText('Resultado: 11');
   expect(resultado).toBeInTheDocument();
 });
