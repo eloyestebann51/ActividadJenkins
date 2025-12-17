@@ -7,30 +7,46 @@ pipeline {
     }
 
     stages {
-
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Test') {
+        stage('Install Dependencies') {
             steps {
-                echo "Ejecutando tests..."
-                sh 'npm test'
+                sh 'npm install'
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                echo "Ejecutando tests en modo CI..."
+                // Ejecuta Jest directamente y falla si algún test falla
+                sh 'npx jest --ci --watchAll=false --passWithNoTests=false'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo "Construyendo la app..."
+                sh 'npm run build'
+            }
+        }
+
+        stage('Archive Artifacts') {
+            steps {
+                archiveArtifacts artifacts: 'build/**', fingerprint: true
             }
         }
     }
 
     post {
-        always {
-            echo "Build finalizado. Revisa los logs."
-        }
         success {
-            echo "Todos los tests pasaron"
+            echo "Build y tests completados correctamente"
         }
         failure {
-            echo "Al menos un test falló"
+            echo "Al menos un test falló, build detenido"
         }
     }
 }
